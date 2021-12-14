@@ -1,4 +1,4 @@
-# Catalog Navigator
+# Captain Catalog
 
 As a curious UCSD undergrad, I always wanted to try out new courses across 
 different areas of knowledge. 
