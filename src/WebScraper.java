@@ -1,19 +1,71 @@
 /**
 Scrape the catalogs
 
-store into a BST
  */
 
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
+
+import java.util.HashSet;
 import java.util.List;
 
 
 public class WebScraper {
 
     private static final String PRE = "Prerequisites: ";
+
+    private static final String 
+    MATH = "https://catalog.ucsd.edu/courses/MATH.html",
+    CSE = "fuck my https://life.com ";
+
+
+    private static final String driverDirectory = 
+    "/Users/sunyupeng/Documents/ChromeDriverFolder/chromedriver";
+
+    WebDriver driver;
+
+    public WebScraper() {
+        System.setProperty("webdriver.chrome.driver", driverDirectory);
+        driver = new ChromeDriver();
+    }
+
+    /**
+    Delegate to other scrape()'s to scrape all subjects' catalog 
+     */
+    public void scrape(HashSet<Course> database) {
+        scrape(MATH, database);
+        // scrape(CSE, database);
+        // ...
+    }
+
+    public void scrape(String url, HashSet<Course> database) {
+        driver.get(url);
+        // Courses names
+        List<WebElement> names = driver.findElements(By.className("course-name"));
+        // Courses descriptions for all courses in Math Department
+        List<WebElement> descriptions = driver.findElements(By.className("course-descriptions"));
+        
+        try {
+            for (int i=0; i < names.size(); i++) { 
+                String name = names.get(i).getText();
+                String des = descriptions.get(i).getText(); 
+
+                //store into a Course Object
+
+
+                System.out.println("Name: " + name);
+                System.out.println("Description: " + des);
+            
+            }
+        } catch (IndexOutOfBoundsException e) {
+            System.err.println("names and descriptions 's sizes don't match!");
+            e.printStackTrace();
+        }
+
+        
+    }
 
     /**
      * "Split" the course description into 2 parts: 
@@ -56,37 +108,12 @@ public class WebScraper {
      * @return
      */
     public static String[] parseCourseDescriptionHHH(String course) {
-        int idx;
-        if ((idx = course.indexOf("Prerequisites: ")) != -1) {
-            // TODO
+        int idx = course.indexOf("Prerequisites: ");
+        // System.out.println(idx + "----" + course.substring(idx));
+        if (idx != -1) {
+            
         } 
         return null;
-    }
-
-
-    public static void main(String[] args) {
-        // locate webdriver
-        System.setProperty("webdriver.chrome.driver", "/Users/sunyupeng/Documents/ChromeDriverFolder/chromedriver");
-        WebDriver driver = new ChromeDriver();
-        driver.get("https://catalog.ucsd.edu/courses/MATH.html");
-        // Course descriptions for all courses in Math Department
-        List<WebElement> courseList = driver.findElements(By.className("course-descriptions"));
-
-        for (WebElement course : courseList) {
-            System.out.println(course.getText());
-            
-
-            try {
-                System.out.println();
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
-            }
-        }
-    
-
-        
     }
 
 }
