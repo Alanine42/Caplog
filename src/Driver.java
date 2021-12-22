@@ -1,17 +1,20 @@
 import java.util.HashSet;
+import java.util.HashMap;
 
 public class Driver {
 
     /**
-    Database
+    Database {"course_name" : CourseObject, ...}
      */
-    private HashSet<Course> database;
+    private static HashMap<String, Course> database;
 
     public static void main(String[] args) {
-        HashSet<Course> database = new HashSet<Course>();
+        database = new HashMap<String, Course>();
 
         WebScraper captain = new WebScraper();
         captain.scrape(database);
+
         
+
     }
 }
