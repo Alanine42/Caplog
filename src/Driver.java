@@ -9,12 +9,17 @@ public class Driver {
     private static HashMap<String, Course> database;
 
     public static void main(String[] args) {
-        database = new HashMap<String, Course>();
+        // Scrape data ? (NO, it's WebScraper.java's job)
+        // Retrieve the scraped and cleaned data
+        // TODO: Data Clearning: bad-format-prereqs, abandoned-courses(eg. MATH 184A)
 
-        WebScraper captain = new WebScraper();
-        captain.scrape(database);
+        // Ask for user input
 
-        
+        // Prepare subgraph
+
+
+
+
 
     }
 }

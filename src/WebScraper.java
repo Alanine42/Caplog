@@ -8,8 +8,11 @@ import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 
 public class WebScraper {
@@ -18,7 +21,8 @@ public class WebScraper {
 
     private static final String 
     MATH = "https://catalog.ucsd.edu/courses/MATH.html",
-    CSE = "https://catalog.ucsd.edu/courses/CSE.html";
+    CSE = "https://catalog.ucsd.edu/courses/CSE.html",
+    BIO = "https://catalog.ucsd.edu/courses/BIOL.html";
 
 
     private static final String driverDirectory = 
@@ -37,8 +41,9 @@ public class WebScraper {
      * @param database  output parameter to store the scraped data
      */
     public void scrape(HashMap<String, Course> database) {
-        scrape(MATH, database);
-        // scrape(CSE, database);
+        // scrape(MATH, database);
+        scrape(CSE, database);
+        // scrape(BIO, database);
         // ...
     }
 
@@ -56,25 +61,81 @@ public class WebScraper {
         // Courses descriptions for all courses in Math Department
         List<WebElement> descriptions = driver.findElements(By.className("course-descriptions"));
         
+        Pattern pattern = Pattern.compile("[A-Z]+ [0-9]+[A-Z]*");
+        Matcher matcher;
+
         try {
-            for (int i=0; i < names.size() / 2; i++) {  /// no /2
+            for (int i=0; i < names.size(); i++) {
+                // Process each course  
                 String name = names.get(i).getText();
+                String ID = name.substring(0, name.indexOf('.'));
                 String des = descriptions.get(i).getText();
+                int startIdx = des.indexOf(PRE);
+
+                // the course has prerequisites
+                if (startIdx != -1) {
+                    // 掐头去尾: leave only the prerequisites in the string
+                    String prereq = des.substring(startIdx + PRE.length());
+                    int endIdx = (prereq.indexOf(';') == -1) ? 
+                                    prereq.indexOf('.') : prereq.indexOf(';');
+                    prereq = prereq.substring(0, endIdx);
+
+                    // TODO: Discern The Badly Formatted Prerequisites !
+                    // Process them as usual, BUT also Report Them to tricky.txt
+
+                    // 分段: split the prerequisite courses by "and" //TODO: split by , in PHYS
+                    List<Vertex> in = new ArrayList<Vertex>();
+                    String[] prereqSubs = prereq.split(" and ");
+                    for (int k=0; k < prereqSubs.length; k++) {
+                        // TODO: ignore possible "...and concurrent enrollment..."
+                        
+                        // isolate each course and record them in "ORs"
+                        matcher = pattern.matcher(prereqSubs[k]);
+                        ArrayList<String> ORs = new ArrayList<String>();
+                        while (matcher.find()) {
+                            ORs.add(matcher.group());
+                        }
+
+                        in.add(new Vertex(ORs));
+                    }
+
+                    // check "in"
+                    System.out.println("-------Testing " + ID + "--------");
+                    System.out.println("in-edges: ");
+                    for (int k=0; k<in.size(); k++) {
+                        System.out.println(k+1 + ". " + in.get(k));
+
+                    }
+                    System.out.println();
+
+
+                }
+
+
 
                 //store into a Course Object
-                Course course = new Course(name, des);
+                // Course course = new Course(name, des);
                 
-                System.out.println(course);
+                // System.out.println("\n");
 
-                database.put(course.id, course);
+                // database.put(course.id, course);
             
             }
+
+            System.out.println();
         } catch (IndexOutOfBoundsException e) {
             System.err.println("WebScraper.java: Names and descriptions 's sizes don't match!!!");
             e.printStackTrace();
         }
 
         
+    }
+
+    public static void main(String[] args) {
+        HashMap<String, Course> database = new HashMap<String, Course>();
+
+        WebScraper captain = new WebScraper();
+        captain.scrape(database);
     }
 
 }

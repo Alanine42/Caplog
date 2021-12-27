@@ -1,29 +1,29 @@
-import java.util.LinkedList;
+import java.util.ArrayList;
 
 /**
 Aggregate Courses object:
 prerequisite: (A or B or C)
 If any prerequisite is satisfied, this Aggregate Courses object is accessible. 
  */
-public class AggCourses {
+public class AggCourses{
 
 
-    private LinkedList<Course> prerequisites;
+    private ArrayList<String> ORs;
 
 
     public AggCourses() {
-        prerequisites = new LinkedList<>();
+        ORs = new ArrayList<>();
     }
 
-    public AggCourses(LinkedList<Course> prereq) {
-        this.prerequisites = prereq;    //shallow copy
+    public AggCourses(ArrayList<String> prereq) {
+        this.ORs = prereq;    //shallow copy
     }
 
     /**
     might NOT be used
      */
-    public void add(Course c) {
-        this.prerequisites.add(c);
+    public void add(String c) {
+        this.ORs.add(c);
     }
     
 }

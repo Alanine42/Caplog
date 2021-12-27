@@ -9,25 +9,38 @@ Utility = outdegree (length of ContributeTowards)
 Utility2 = sum of ContributeToward's Course's Utility
  */
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 public class Course {
-    public String id;  // eg. "CSE 21"
+    public String ID;  // eg. "CSE 21"
     private String name;
     private String description;
-    private String prereq;   // raw prerequisite string
+    public String prereq;   // raw prerequisite string
 
-    private List<Course> in;
-    private List<Course> out;
+    private List<Vertex> in;    //in-going edges
+    private List<Vertex> out;   //out-going edges
 
     public boolean taken; // have the user taken this class yet?
+
+    /**
+     * Records the information processed by the WebScraper
+     * @param name The course's full name
+     * @param des The course's description
+     * @param in List of all the course's prerequisites
+     */
+    public Course(String ID, String name, String des, ArrayList<Vertex> in) {
+        this.ID = ID;
+        this.name = name;
+        
+    }
 
     /**
     Reads in Course's name and description
      */
     public Course(String name, String description) {
-        this.id = name.substring(0, name.indexOf('.'));
+        this.ID = name.substring(0, name.indexOf('.'));
         this.name = name;
         this.description = description;
         this.prereq = "";
@@ -38,33 +51,40 @@ public class Course {
     }
 
     /**
-    Parse the course prerequisites from the description String.
+    Extract the course prerequisites from the description String.
+    Parse the prerequisites into individual courses.
+    E.g.
+    Prerequisites: "(A or B) and (C or D) and E"
+    Parse it into {(A or B), (C or D), E }
     Set them to be the in-going edges of the Course vertex. 
      */
     private void parsePrerequisites() {
-        // this.prereq = "";
         int idx = description.indexOf("Prerequisites: ");
+    
+        if (idx == -1) return;   // no prerequisites
 
-        // no prerequisites
-        if (idx == -1) return;
-
-        // has prerequisite(s), extract them and parse into individual courses
-        // 掐头
+        // 掐头: discard "Prerequisites"
         prereq = description.substring(idx + "Prerequisites: ".length());
-        // 去尾: there is always a period in the end
-        // but it's possible to end early at a semicolon.
+        // 去尾: useful information may end with an early semicolon or a period. 
         int end = (prereq.indexOf(';') == -1) ? 
                     prereq.indexOf('.') : prereq.indexOf(';');
-        String[] prereqSubstrings = prereq.substring(0, end).split(" and ");
+        prereq = prereq.substring(0, end);
 
-        for (String s : prereqSubstrings) System.out.println(s + "\n"); //TESTING
-
+        // 分段: split the prerequisite courses by "and"
+        String[] prereqSubstrings = prereq.split(" and ");
+        for (String str : prereqSubstrings) {
+            // isolate each course and record them
+            
+        }
         
+   
     }
+
+    
 
     @Override
     public String toString() {
-        return "ID: " + id + 
+        return "ID: " + ID + 
         "\nName: " + name + 
         "\nDescription: " + description + 
         "\nPrerequisites: " + prereq + "\n";
