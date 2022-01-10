@@ -14,6 +14,8 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
+
 
 public class WebScraper {
 
@@ -65,62 +67,57 @@ public class WebScraper {
         Matcher matcher;
 
         try {
-            for (int i=0; i < names.size(); i++) {
-                // Process each course  
-                String name = names.get(i).getText();
-                String ID = name.substring(0, name.indexOf('.'));
-                String des = descriptions.get(i).getText();
-                int startIdx = des.indexOf(PRE);
+        for (int i=0; i < names.size(); i++) {
+            // Process each course  
+            String name = names.get(i).getText();
+            String ID = name.substring(0, name.indexOf('.'));
+            String des = descriptions.get(i).getText();
+            int startIdx = des.indexOf(PRE);
 
-                // the course has prerequisites
-                if (startIdx != -1) {
-                    // 掐头去尾: leave only the prerequisites in the string
-                    String prereq = des.substring(startIdx + PRE.length());
-                    int endIdx = (prereq.indexOf(';') == -1) ? 
-                                    prereq.indexOf('.') : prereq.indexOf(';');
-                    prereq = prereq.substring(0, endIdx);
+            // the course has prerequisites
+            if (startIdx != -1) {
+                // 掐头去尾: leave only the prerequisites in the string
+                String prereq = des.substring(startIdx + PRE.length());
+                int endIdx = (prereq.indexOf(';') == -1) ? 
+                                prereq.indexOf('.') : prereq.indexOf(';');
+                prereq = prereq.substring(0, endIdx);
 
-                    // TODO: Discern The Badly Formatted Prerequisites !
-                    // Process them as usual, BUT also Report Them to tricky.txt
+                // TODO: Discern The Badly Formatted Prerequisites !
+                // Process them as usual, BUT also Report Them to tricky.txt
 
-                    // 分段: split the prerequisite courses by "and" //TODO: split by , in PHYS
-                    List<Vertex> in = new ArrayList<Vertex>();
-                    String[] prereqSubs = prereq.split(" and ");
-                    for (int k=0; k < prereqSubs.length; k++) {
-                        // TODO: ignore possible "...and concurrent enrollment..."
-                        
-                        // isolate each course and record them in "ORs"
-                        matcher = pattern.matcher(prereqSubs[k]);
-                        ArrayList<String> ORs = new ArrayList<String>();
-                        while (matcher.find()) {
-                            ORs.add(matcher.group());
-                        }
-
-                        in.add(new Vertex(ORs));
+                // 分段: split the prerequisite courses by "and" //TODO: split by , in PHYS
+                ArrayList<Vertex> in = new ArrayList<Vertex>();
+                String[] prereqSubs = prereq.split(" and ");
+                for (int k=0; k < prereqSubs.length; k++) {
+                    // TODO: ignore possible "...and concurrent enrollment..."
+                    
+                    // isolate each course and record them in "ORs"
+                    matcher = pattern.matcher(prereqSubs[k]);
+                    ArrayList<String> ORs = new ArrayList<String>();
+                    while (matcher.find()) {
+                        ORs.add(matcher.group());
                     }
 
-                    // check "in"
-                    System.out.println("-------Testing " + ID + "--------");
-                    System.out.println("in-edges: ");
-                    for (int k=0; k<in.size(); k++) {
-                        System.out.println(k+1 + ". " + in.get(k));
-
-                    }
-                    System.out.println();
-
-
+                    in.add(new Vertex(ORs));
                 }
 
+                // check "in"
+                System.out.println("-------Testing " + ID + "--------");
+                System.out.println("in-edges: ");
+                for (int k=0; k<in.size(); k++) {
+                    System.out.println(k+1 + ". " + in.get(k));
 
+                }
+                System.out.println();
 
-                //store into a Course Object
-                // Course course = new Course(name, des);
-                
-                // System.out.println("\n");
+                //Record into a Course object, store in database (FOR NOW)
+                Course course = new Course(ID, name, des, in);
+                database.put(ID, course);
 
-                // database.put(course.id, course);
-            
             }
+
+        
+        }
 
             System.out.println();
         } catch (IndexOutOfBoundsException e) {
@@ -134,8 +131,13 @@ public class WebScraper {
     public static void main(String[] args) {
         HashMap<String, Course> database = new HashMap<String, Course>();
 
+        // Scrape catalogs and store all data into `database`
         WebScraper captain = new WebScraper();
         captain.scrape(database);
+
+        
+
+
     }
 
 }
