@@ -36,3 +36,5 @@ Tricky situations {
 
 
 }
+
+LIFE IS SHORT, I NEED PYTHON!!!!

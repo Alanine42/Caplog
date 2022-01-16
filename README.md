@@ -40,3 +40,5 @@ The workspace contains two folders by default, where:
 Meanwhile, the compiled output files will be generated in the `bin` folder by default.
 
 Referenced Library: Selenium (https://www.selenium.dev/) for web scraping.
+
+2022/1/16: Working in Python now. Life is short. 

@@ -10,12 +10,10 @@ import org.openqa.selenium.WebElement;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import com.fasterxml.jackson.annotation.JsonTypeInfo.Id;
-
 
 public class WebScraper {
 
@@ -86,7 +84,7 @@ public class WebScraper {
                 // Process them as usual, BUT also Report Them to tricky.txt
 
                 // 分段: split the prerequisite courses by "and" //TODO: split by , in PHYS
-                ArrayList<Vertex> in = new ArrayList<Vertex>();
+                LinkedList<Vertex> in = new LinkedList<Vertex>();
                 String[] prereqSubs = prereq.split(" and ");
                 for (int k=0; k < prereqSubs.length; k++) {
                     // TODO: ignore possible "...and concurrent enrollment..."

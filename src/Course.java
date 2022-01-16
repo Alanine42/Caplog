@@ -13,16 +13,19 @@ import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
-public class Course {
-    public String ID;  // eg. "CSE 21"
+public class Course extends Vertex{
+    // Data Fields
+    // public String ID;  // already have this field in parent class Vertex
     private String name;
     private String description;
-    // public String prereq;   // raw prerequisite string
 
-    private List<Vertex> in;    //in-going edges
-    private List<Vertex> out;   //out-going edges
+    public LinkedList<Vertex> prereqs; // List of prerequisites (immutable)
+    public LinkedList<Vertex> in;    //List of prerequisites (mutable)
+    public LinkedList<Vertex> out;   //out-going edges
 
+    // User Flag (Dynamic Decision)
     public boolean taken; // have the user taken this class yet?
+    public int utility;
 
     /**
      * Records the information processed by the WebScraper
@@ -30,23 +33,39 @@ public class Course {
      * @param des The course's description
      * @param in List of all the course's prerequisites
      */
-    public Course(String ID, String name, String des, ArrayList<Vertex> in) {
-        this.ID = ID;
+    public Course(String ID, String name, String des, LinkedList<Vertex> in) {
+        super(ID);
+        // this.ID = ID;
         this.name = name;
         this.description = des;
         this.in = in;
 
     }
 
+// ------------------------------For testing in TOpological.java---------------
+    public Course(String ID, LinkedList<Vertex> prereqsIn) {
+        super(ID);
+        this.prereqs = prereqsIn;
+        this.in = (LinkedList<Vertex>) prereqsIn.clone();
+    }
+
+
+    public void setOuts(LinkedList<Vertex> outs) {
+        this.out = outs;
+    }
+
+   
 
     
 
+
+//------------------------------Testing methods end--------------------------
     @Override
     public String toString() {
-        return "ID: " + ID + 
-        "\nName: " + name + 
-        "\nDescription: " + description + "\n";
-        // "\nPrerequisites: " + prereq + "\n";
+        return ID;
+        // return "ID: " + ID + 
+        // "\nName: " + name + 
+        // "\nDescription: " + description + "\n";
     }
     
 }
